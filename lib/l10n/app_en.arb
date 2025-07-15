@@ -1,0 +1,20 @@
+{
+  "appTitle": "Room Management",
+  "availableRooms": "Available Rooms",
+  "myReservations": "My Reservations",
+  "editRoom": "Edit Room",
+  "releaseRoom": "Release Room",
+  "reserveRoom": "Reserve Room",
+  "capacity": "Capacity",
+  "location": "Location",
+  "stateReserved": "State: Reserved",
+  "stateAvailable": "State: Available",
+  "cancel": "Cancel",
+  "save": "Save",
+  "selectDate": "Select Date",
+  "selectStart": "Select Start",
+  "selectEnd": "Select End",
+  "noReservations": "You have no reservations yet.",
+  "pleaseSelectDateTime": "Please select date and times.",
+  "endAfterStart": "End time must be after start time."
+}

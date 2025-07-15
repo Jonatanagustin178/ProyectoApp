@@ -1,0 +1,20 @@
+{
+  "appTitle": "Gestión de Salas",
+  "availableRooms": "Salas Disponibles",
+  "myReservations": "Mis Reservas",
+  "editRoom": "Editar Sala",
+  "releaseRoom": "Liberar Sala",
+  "reserveRoom": "Reservar Sala",
+  "capacity": "Capacidad",
+  "location": "Ubicación",
+  "stateReserved": "Estado: Reservada",
+  "stateAvailable": "Estado: Disponible",
+  "cancel": "Cancelar",
+  "save": "Guardar",
+  "selectDate": "Seleccionar Fecha",
+  "selectStart": "Seleccionar Inicio",
+  "selectEnd": "Seleccionar Fin",
+  "noReservations": "Aún no tienes reservas.",
+  "pleaseSelectDateTime": "Por favor, selecciona fecha y horas.",
+  "endAfterStart": "La hora de fin debe ser posterior a la de inicio."
+}
