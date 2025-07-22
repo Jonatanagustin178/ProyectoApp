@@ -5,6 +5,7 @@ import 'package:confetti/confetti.dart';
 import 'package:provider/provider.dart';
 import 'package:aplicacion_app/models/models.dart';
 import 'package:aplicacion_app/provider/provider_reservaciones.dart';
+import 'package:aplicacion_app/provider/weather_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:aplicacion_app/l10n/app_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -83,8 +84,11 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ReservasProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ReservasProvider()),
+        ChangeNotifierProvider(create: (context) => WeatherProvider()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -102,10 +106,28 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class SalasScreen extends StatelessWidget {
+class SalasScreen extends StatefulWidget {
   final void Function(Locale?)? onLocaleChanged;
   final Locale? currentLocale;
   const SalasScreen({super.key, this.onLocaleChanged, this.currentLocale});
+
+  @override
+  State<SalasScreen> createState() => _SalasScreenState();
+}
+
+class _SalasScreenState extends State<SalasScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Cargar el clima al inicializar la pantalla
+    Future.microtask(() {
+      // Coordenadas de Querétaro
+      Provider.of<WeatherProvider>(
+        context,
+        listen: false,
+      ).loadWeather(20.5888, -100.3899);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,30 +141,40 @@ class SalasScreen extends StatelessWidget {
           PopupMenuButton<Locale>(
             icon: const Icon(Icons.language),
             onSelected: (locale) {
-              if (onLocaleChanged != null) onLocaleChanged!(locale);
+              if (widget.onLocaleChanged != null)
+                widget.onLocaleChanged!(locale);
             },
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: const Locale('es'),
                 child: const Text('Español'),
-                enabled: currentLocale?.languageCode != 'es',
+                enabled: widget.currentLocale?.languageCode != 'es',
               ),
               PopupMenuItem(
                 value: const Locale('en'),
                 child: const Text('English'),
-                enabled: currentLocale?.languageCode != 'en',
+                enabled: widget.currentLocale?.languageCode != 'en',
               ),
             ],
           ),
         ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: salas.length,
-        itemBuilder: (context, index) {
-          final sala = salas[index];
-          return SalaCard(sala: sala);
-        },
+      body: Column(
+        children: [
+          // Header con información del clima
+          const WeatherHeader(),
+          // Lista de salas
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16.0),
+              itemCount: salas.length,
+              itemBuilder: (context, index) {
+                final sala = salas[index];
+                return SalaCard(sala: sala);
+              },
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -751,6 +783,138 @@ class ReservaProgressBar extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+// Widget Header con información del clima
+class WeatherHeader extends StatelessWidget {
+  const WeatherHeader({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final weatherProvider = Provider.of<WeatherProvider>(context);
+    final weather = weatherProvider.weatherData;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16.0),
+      margin: const EdgeInsets.all(16.0),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.blue.shade400, Colors.blue.shade600],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(15.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '¡Bienvenido!',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Gestiona tus reservas de salas',
+            style: TextStyle(fontSize: 16, color: Colors.white70),
+          ),
+          const SizedBox(height: 16),
+          // Información del clima
+          if (weatherProvider.isLoading)
+            const Row(
+              children: [
+                SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+                SizedBox(width: 8),
+                Text(
+                  'Cargando clima...',
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ],
+            )
+          else if (weatherProvider.errorMessage != null)
+            Row(
+              children: [
+                const Icon(
+                  Icons.error_outline,
+                  color: Colors.white70,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  weatherProvider.errorMessage!,
+                  style: const TextStyle(color: Colors.white70),
+                ),
+              ],
+            )
+          else if (weather != null)
+            Row(
+              children: [
+                Image.network(
+                  'https://openweathermap.org/img/wn/${weather.iconCode}@2x.png',
+                  width: 50,
+                  height: 50,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(
+                      Icons.wb_sunny,
+                      color: Colors.white,
+                      size: 30,
+                    );
+                  },
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${weather.temperature.toStringAsFixed(1)}°C',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        weather.description,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.white70,
+                        ),
+                      ),
+                      Text(
+                        weather.cityName,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white60,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
     );
   }
 }
