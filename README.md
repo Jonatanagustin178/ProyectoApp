@@ -289,9 +289,4 @@ Utiliza el botón de idioma (🌐) en la AppBar para alternar entre idiomas.
 - [flutter_local_notifications](https://pub.dev/packages/flutter_local_notifications)
 - [intl](https://pub.dev/packages/intl)
 
-## Créditos y agradecimientos
 
-Desarrollado por [Tu Nombre].
-
----
-¡Personaliza este README con tu nombre y el enlace de tu repositorio antes de publicarlo en GitHub!
