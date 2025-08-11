@@ -1,8 +1,8 @@
 name: aplicacion_app
-description: "A new Flutter project."
+description: "Aplicación para la gestión y reservación de salas con información meteorológica en tiempo real."
 publish_to: 'none' 
 
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
   sdk: ^3.8.1
@@ -19,11 +19,16 @@ dependencies:
   intl: ^0.20.2
   confetti: ^0.8.0
   http: ^1.1.0
+  image_picker: ^1.0.4
+  shared_preferences: ^2.2.2
+  path_provider: ^2.1.1
+  timezone: ^0.10.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -33,5 +38,11 @@ flutter:
     - assets/sala2.jpeg
     - assets/sala3.jpeg
     - assets/sala4.jpeg
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/sala1.jpeg"
+  min_sdk_android: 21
     
     

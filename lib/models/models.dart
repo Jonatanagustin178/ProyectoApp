@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 class Sala {
   final String id;
-  final String nombre;
-  final String imagenAsset;
+  String nombre;
+  String imagenAsset;
   int capacidad;
   String ubicacion;
   bool isReservada; // Indicador de si la sala está reservada
@@ -26,6 +26,8 @@ class Reserva {
   final DateTime fechaReserva;
   final TimeOfDay horaInicio;
   final TimeOfDay horaFin;
+  final String nombreUsuario;
+  bool isCancelled; // Nuevo campo para indicar si la reserva fue cancelada
 
   Reserva({
     required this.id,
@@ -34,5 +36,7 @@ class Reserva {
     required this.fechaReserva,
     required this.horaInicio,
     required this.horaFin,
+    this.nombreUsuario = 'Usuario',
+    this.isCancelled = false, // Por defecto no está cancelada
   });
 }
